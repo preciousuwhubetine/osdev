@@ -6,6 +6,9 @@ WHATS CURRENTLY INCLUDED:
   since the first stage is limited to just 512 bytes of code.
 - A basic kernel with a print string routine.
 
+In the makefile, I write the output binary to /dev/sdb which is the second hdd connected to my PC.
+I'm gonna be making a tutorial on how I did all of this really soon...
+
 WHATS COMING:
 - Support for interrupt handling.
 - Multitasking support.
