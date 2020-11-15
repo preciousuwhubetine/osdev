@@ -21,4 +21,4 @@ WHATS COMING:
 - Displaying a bitmap image on the screen.
 - An application launcher (still not sure how i'm gonna be doing this).
 
-I'm gonna be updating the list as soon as new ideas drop!
+I'm gonna be updating the list as new ideas drop!
