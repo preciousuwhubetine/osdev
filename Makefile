@@ -9,6 +9,8 @@ boot_files = out/bin/bootloader1.bin \
 kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/util/screen.o \
 				out/obj/kernel/IO/port.o \
+				out/obj/kernel/IO/interrupts.o \
+				out/obj/kernel/IO/interruptstubs.o \
 				out/obj/kernel/kernel_main.o
 
 out/bin/%.bin: bootloader/%.asm
