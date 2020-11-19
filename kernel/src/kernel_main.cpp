@@ -9,6 +9,7 @@
 #include <drivers/usb.h>
 #include <drivers/ehci.h>
 #include <drivers/usb_mass_storages.h>
+#include <drivers/filesystem.h>
 #include <graphics/vesa.h>
 #include <util/system.h>
 #include <util/screen.h>
@@ -90,6 +91,9 @@ extern "C" void kernel_main(uint32_t kernel_info_block)
 	EHCIDriver* ehci_driver = (EHCIDriver*)memoryManager.malloc(sizeof(EHCIDriver));
 	if (ehci_driver == 0) return;
 
+	//The first filesystem instance initiated is the one used by the boot disk of ths OS.
+	FileSystem* fs = (FileSystem*)memoryManager.malloc(sizeof(FileSystem));
+	if (fs == 0) return;
 
 	PCIDeviceDescriptor* ahci_descriptor = (PCIDeviceDescriptor*)memoryManager.malloc(sizeof(PCIDeviceDescriptor));
 	if (ahci_descriptor == 0) return;
@@ -243,6 +247,20 @@ extern "C" void kernel_main(uint32_t kernel_info_block)
 
 	if (diskIndex == 0) {print("Boot disk not found! Please reboot your PC");return;}
 	ehci_driver->portCanChange = true;
+
+	//Initialize boot disk file system...
+	OSBootSector* boot_sector = (OSBootSector*)buffer;
+	if (boot_sector->partition2.FSType == 0x07)
+	{
+		print("Initializing filesystem...\n");
+		if (diskIndex > 0x80) new (fs) FileSystem(usbMassStorages->MassStorageDevices[diskIndex-0x81], boot_sector);
+		else if (diskIndex > 4) new (fs) FileSystem(ahci_disk, boot_sector);
+		else new (fs) FileSystem(ide_disk, boot_sector);
+	}
+	else {
+		print("Invalid File System Detected!\n");
+		return;
+	}
 
 
 	ConsoleKeyboardHandler* kbhandler = (ConsoleKeyboardHandler*)memoryManager.malloc(sizeof(ConsoleKeyboardHandler));

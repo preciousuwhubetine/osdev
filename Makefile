@@ -23,6 +23,7 @@ kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/drivers/ehci.o \
 				out/obj/kernel/drivers/usb.o \
 				out/obj/kernel/drivers/usb_mass_storages.o \
+				out/obj/kernel/drivers/filesystem.o \
 				out/obj/kernel/memory_manager.o \
 				out/obj/kernel/multitasking.o \
 				out/obj/kernel/kernel_main.o
