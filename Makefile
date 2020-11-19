@@ -9,6 +9,9 @@ boot_files = out/bin/bootloader1.bin \
 kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/util/screen.o \
 				out/obj/kernel/util/system.o \
+				out/obj/kernel/util/events.o \
+				out/obj/kernel/util/number.o \
+				out/obj/kernel/util/string.o \
 				out/obj/kernel/IO/port.o \
 				out/obj/kernel/IO/interrupts.o \
 				out/obj/kernel/IO/interruptstubs.o \
@@ -17,6 +20,9 @@ kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/drivers/keyboard.o \
 				out/obj/kernel/drivers/ide.o \
 				out/obj/kernel/drivers/ahci.o \
+				out/obj/kernel/drivers/ehci.o \
+				out/obj/kernel/drivers/usb.o \
+				out/obj/kernel/drivers/usb_mass_storages.o \
 				out/obj/kernel/memory_manager.o \
 				out/obj/kernel/multitasking.o \
 				out/obj/kernel/kernel_main.o
