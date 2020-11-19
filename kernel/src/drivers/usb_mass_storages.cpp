@@ -23,20 +23,22 @@ int USBMassStorage::Initialize()
 {
     int retries = 0; uint8_t status;
     ((uint8_t*)statusBuffer)[12] = 0xff;
-    while (((uint8_t*)statusBuffer)[12] != 0 && retries < 5)  //There was am error
+    while (((uint8_t*)statusBuffer)[12] != 0 && retries < 5)  //There was an error
     {
         retries++;
         status = Inquiry();
         if (status != 0)
         {
             print("Mass storage Inquiry Error!\n");
-            return status;
+            continue;
         }
         MemoryManager::ActiveMemoryManager->memcpy((uint8_t*)(dataBuffer + 8), (uint8_t*)ProductID, 8);
         ProductID[8] = 0;
         MemoryManager::ActiveMemoryManager->memcpy((uint8_t*)(dataBuffer + 16), (uint8_t*)DeviceID, 8);
         DeviceID[8] = 0;
     }
+
+    if (retries >= 5) return status;
 
     retries = 0;
     ((uint8_t*)statusBuffer)[12] = 0xff;
@@ -47,7 +49,7 @@ int USBMassStorage::Initialize()
         if (status != 0)
         {
             print("Mass storage Test Unit Ready Error!\n");
-            return status;
+            continue;
         }
         
         uint8_t tmp = ((uint8_t*)statusBuffer)[12];
@@ -57,11 +59,13 @@ int USBMassStorage::Initialize()
             if (status != 0)
             {
                 print("Mass storage Request sense Error!\n");
-                return status;
+                continue;
             }
         }
         ((uint8_t*)statusBuffer)[12] = tmp;
     }
+
+    if (retries >= 5) return status;
 
     retries = 0;
     ((uint8_t*)statusBuffer)[12] = 0xff;
@@ -72,7 +76,7 @@ int USBMassStorage::Initialize()
         if (status != 0)
         {
             print("Mass storage Read Capacity Error!\n");
-            return status;
+            continue;
         }
         
         uint8_t tmp = ((uint8_t*)statusBuffer)[12];
@@ -82,11 +86,13 @@ int USBMassStorage::Initialize()
             if (status != 0)
             {
                 print("Mass storage Request sense Error!\n");
-                return status;
+                continue;
             }
         }
         ((uint8_t*)statusBuffer)[12] = tmp;
     }
+    
+    if (retries >= 5) return status;
 
     uint8_t* buf = (uint8_t*)dataBuffer;
     bytesPerSector = buf[7];
@@ -105,7 +111,7 @@ int USBMassStorage::Initialize()
     status = Read(0, 1, (uint8_t*)dataBuffer);  //try the read command
     if (status != 0)
     {
-        print("Drive Read error!  : \n"); 
+        print("Drive Read error!\n"); 
         // for (int i = 0; i < 13; i++) printHex8(((uint8_t*)statusBuffer)[i]);
         return status;
     }
@@ -114,7 +120,14 @@ int USBMassStorage::Initialize()
     print("New USB Mass Storage Initialized.\n");
 
     status = Read(0, 1, (uint8_t*)dataBuffer);  //try the read command again
-    print("Printing first sector:: \n");
+    if (status != 0)
+    {
+        print("Drive Read error!\n"); 
+        // for (int i = 0; i < 13; i++) printHex8(((uint8_t*)statusBuffer)[i]);
+        return status;
+    }
+
+    print("Dumping first sector ::: \n");
     for (int i = 0; i < 512; i++)
     {
         char* str = " \0";

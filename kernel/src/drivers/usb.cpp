@@ -2,7 +2,7 @@
 #include <drivers/usb_mass_storages.h>
 
 /*
-    Written on the 24th August 2020 12:14am - 6:30am
+    Written on the 24th of August 2020 12:14am - 6:30am
 */
 
 using namespace crystalos;
@@ -46,7 +46,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
         //////////////////////////////////////////
         if (!status->controller->DevicePresent(status->portNumber))
         {
-            print("USB device was changed during processing.\n");
+            print("USB device state was changed during processing.\n");
             return;
         }
         
@@ -69,7 +69,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
 
         if (!status->controller->DevicePresent(status->portNumber))
         {
-            print("USB device was changed during processing.\n");
+            print("USB device state was changed during processing.\n");
             MemoryManager::ActiveMemoryManager->free(usbDescriptor);
             return;
         }
@@ -95,6 +95,8 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
         if (usbConfig == 0)
         {
             print("USB Memory error.\n");
+
+            //Just for debugging purposes...
             for (MemoryChunk* chunk = (MemoryChunk*)(10*1024*1024); chunk->next != 0; chunk = chunk->next)
             {
                 char bhh[13];
@@ -103,6 +105,8 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
                 itoa((uint32_t)chunk->size, 16, bhh);
                 print(bhh);
             }
+            ///////////////////////////////
+            
             MemoryManager::ActiveMemoryManager->free(usbDescriptor);
             return;
         }
@@ -111,7 +115,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
 
         if (!status->controller->DevicePresent(status->portNumber))
         {
-            print("USB device was changed during processing.\n");
+            print("USB device state was changed during processing.\n");
             MemoryManager::ActiveMemoryManager->free(usbDescriptor);
             MemoryManager::ActiveMemoryManager->free(usbConfig);
             return;
@@ -136,7 +140,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
 
         if (!status->controller->DevicePresent(status->portNumber))
         {
-            print("USB device was changed during processing.\n");
+            print("USB device state was changed during processing.\n");
             MemoryManager::ActiveMemoryManager->free(usbDescriptor);
             return;
         }
@@ -147,7 +151,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
         
         if (usbConfig->numInterfaces != 0x1)
         {
-            print("No support for USB devices that have more than one interface.\n");
+            print("No support for USB devices that have more than one interface yet!.\n");
             MemoryManager::ActiveMemoryManager->free(usbDescriptor);
             return;
         }
@@ -191,7 +195,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
 
                     if (inEndpoint == 0 || outEndpoint == 0 || (!status->controller->DevicePresent(status->portNumber)))
                     {
-                        print("This device does not contain valid data endpoints\n");
+                        print("This device does not contain valid data endpoints!\n");
                         MemoryManager::ActiveMemoryManager->free(usbDescriptor);
                         MemoryManager::ActiveMemoryManager->free(epin);
                         MemoryManager::ActiveMemoryManager->free(epout);
@@ -252,7 +256,7 @@ void USBDriver::HandlePortChange(EHCIPortChangeStatus* status)
                     if (massStorage == 0 || (!status->controller->DevicePresent(status->portNumber)))
                     {
                         if (massStorage == 0) print("USB Memory error 3.\n");
-                        else print("USB device removed during processing .\n");
+                        else print("USB device was removed during processing .\n");
                         MemoryManager::ActiveMemoryManager->free(usbDescriptor);
                         MemoryManager::ActiveMemoryManager->free(epin);
                         MemoryManager::ActiveMemoryManager->free(epout);

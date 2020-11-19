@@ -227,8 +227,9 @@ extern "C" void kernel_main(uint32_t kernel_info_block)
 			}
 			
 			ehci_driver->EnableAsyncSchedule();
-			for (int i = 0; usbMassStorages->MassStorageDevices[i] != 0; i++)
+			for (int i = 0; i < 127; i++)
 			{
+				if (usbMassStorages->MassStorageDevices[i] == 0) continue;
 				uint8_t status = usbMassStorages->MassStorageDevices[i]->Read(0, 1, buffer);
 				if (*(uint32_t*)(buffer + 442) == os_signature)
 				{
