@@ -4,6 +4,8 @@
 #include <common/types.h>
 #include <IO/port.h>
 #include <util/screen.h>
+#include <multitasking.h>
+#include <memory_manager.h>
 
 namespace crystalos
 {
@@ -50,10 +52,17 @@ namespace crystalos
                 InterruptManager();
                 ~InterruptManager();
 
+                int sleepCounter;
+
+                bool ScheduleEnabled;
+                ScheduleEntry* ScheduleEntries;
+
 				static InterruptManager* ActiveInterruptManager;
                 void SetIDTEntry(common::uint8_t interruptNumber, void (*handler)());
                 void Activate();
                 void Deactivate();
+
+                bool Schedule(void (*handler)(), int numFrames);
                 
                 static common::uint32_t HandleInterrupt(common::uint8_t interruptNumber, common::uint32_t esp);
                 common::uint32_t DoHandleInterrupt(common::uint8_t interruptNumber, common::uint32_t esp);

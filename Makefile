@@ -8,9 +8,17 @@ boot_files = out/bin/bootloader1.bin \
 
 kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/util/screen.o \
+				out/obj/kernel/util/system.o \
 				out/obj/kernel/IO/port.o \
 				out/obj/kernel/IO/interrupts.o \
 				out/obj/kernel/IO/interruptstubs.o \
+				out/obj/kernel/IO/pci.o \
+				out/obj/kernel/drivers/driver.o \
+				out/obj/kernel/drivers/keyboard.o \
+				out/obj/kernel/drivers/ide.o \
+				out/obj/kernel/drivers/ahci.o \
+				out/obj/kernel/memory_manager.o \
+				out/obj/kernel/multitasking.o \
 				out/obj/kernel/kernel_main.o
 
 out/bin/%.bin: bootloader/%.asm
@@ -30,6 +38,7 @@ out/obj/kernel/%.o: kernel/src/%.cpp
 	mkdir -p out/obj/kernel
 	mkdir -p out/obj/kernel/util
 	mkdir -p out/obj/kernel/IO
+	mkdir -p out/obj/kernel/drivers
 	i586-elf-g++ $(GPPPARAMS_KERNEL) -c $< -o $@
 
 kernel.bin: $(kernel_files)

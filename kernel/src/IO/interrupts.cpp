@@ -47,6 +47,16 @@ InterruptManager::InterruptManager()
         handlers[i] = 0;
     }
 
+    ScheduleEntries = (ScheduleEntry*)MemoryManager::ActiveMemoryManager->malloc(sizeof(ScheduleEntry) * 256);
+    for (int i = 0; i < 256; i++)
+    {
+        ScheduleEntries[i].free = true;
+        ScheduleEntries[i].handlerAddress = 0;
+        ScheduleEntries[i].currentFrame = 0;
+        ScheduleEntries[i].lastFrame = 0;
+    }
+    ScheduleEnabled = true;
+
 	SetIDTEntry(0x00, &HandleException0x00);
 	SetIDTEntry(0x01, &HandleException0x01);
 	SetIDTEntry(0x02, &HandleException0x02);
@@ -184,7 +194,17 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
 
     if (interruptNumber == 0x20)
     {
-        //timer
+        sleepCounter++;
+        if (ScheduleEnabled)
+        {
+            for (int int_num = 0; int_num < 256; int_num++)
+            {
+                if (ScheduleEntries[int_num].handlerAddress == 0) break;
+                if (ScheduleEntries[int_num].free) continue;
+                ScheduleEntries[int_num].currentFrame++;
+            }
+        }
+        stack_pointer = (uint32_t)TaskManager::kernelTasks->Schedule((CPUState*)esp);
     }
 
     if (interruptNumber >= 0x20 && interruptNumber <= 0x40)
@@ -203,4 +223,23 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interruptNumber, uint32_t e
 uint32_t InterruptManager::HandleInterrupt(uint8_t interruptNumber, uint32_t esp)
 {
     return ActiveInterruptManager->DoHandleInterrupt(interruptNumber, esp);
+}
+
+bool InterruptManager::Schedule(void (*handler)(), int numFrames)
+{
+    ScheduleEnabled = false;
+    for (int i = 0; i < 256; i++)
+    {
+        if (ScheduleEntries[i].free || ScheduleEntries[i].handlerAddress == 0)
+        {
+            ScheduleEntries[i].free = false;
+            ScheduleEntries[i].handlerAddress = handler;
+            ScheduleEntries[i].currentFrame = 0;
+            ScheduleEntries[i].lastFrame = numFrames;
+            ScheduleEnabled = true;
+            return true;
+        }
+    }
+    ScheduleEnabled = true;
+    return false;
 }
