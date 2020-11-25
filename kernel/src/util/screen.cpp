@@ -4,6 +4,8 @@ using namespace crystalos;
 using namespace crystalos::common;
 using namespace crystalos::util;
 
+// #define GRAPHICS_MODE
+
 void util::clearScreen()
 {
 	//The video memory is located at address 0xb8000
@@ -15,6 +17,7 @@ void util::clearScreen()
 
 void util::print(char* str)
 {
+#ifndef GRAPHICS_MODE
 	uint8_t* vidmem = (uint8_t*)0xb8000;
 	static uint32_t x = 0, y = 0;
 
@@ -41,8 +44,13 @@ void util::print(char* str)
 		{
 			x = 0;
 			y = 24;
+			MemoryManager::ActiveMemoryManager->memcpy((common::uint8_t*)(vidmem + 160), (common::uint8_t*)vidmem, 160*24);
+			MemoryManager::ActiveMemoryManager->memset((common::uint8_t*)(vidmem + 160*24), 0, 160);
 		}
 	}
+#else
+
+#endif
 }
 
 void util::printHex32(uint32_t hex_value)

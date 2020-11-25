@@ -1,9 +1,11 @@
 #include <drivers/filesystem.h>
+#include <graphics/desktop.h>
 
 using namespace crystalos;
 using namespace crystalos::common;
 using namespace crystalos::drivers;
 using namespace crystalos::util;
+using namespace crystalos::graphics;
 
 FileSystem* FileSystem::BootDiskFileSystem = 0;
 
@@ -124,7 +126,7 @@ File* FileSystem::GetFiles(char* directory, int* filecount)
     int FileCount = 0;
     uint8_t* RootDirectory = (uint8_t*)MemoryManager::ActiveMemoryManager->malloc(boot_sector->BytesPerSector * boot_sector->SectorsPerCluster);
     int currentCluster = RootDirectoryFirstCluster;
- 
+    
     //.. TODO: Add specific folder reading support...
     while (true)
     {

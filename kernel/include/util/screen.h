@@ -2,6 +2,7 @@
 #define CRYSTALOS__UTIL__SCREEN_H
 
 #include <common/types.h>
+#include <memory_manager.h>
 
 namespace crystalos
 {

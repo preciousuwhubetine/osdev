@@ -1,3 +1,5 @@
+#define GRAPHICS_MODE
+
 #include <common/types.h>
 #include <IO/port.h>
 #include <IO/interrupts.h>
@@ -11,11 +13,15 @@
 #include <drivers/usb_mass_storages.h>
 #include <drivers/filesystem.h>
 #include <graphics/vesa.h>
+#include <graphics/desktop.h>
+#include <graphics/widget.h>
+#include <graphics/window.h>
 #include <util/system.h>
 #include <util/screen.h>
 #include <util/number.h>
 #include <util/string.h>
 #include <util/events.h>
+#include <util/images/bitmap.h>
 #include <memory_manager.h>
 #include <multitasking.h>
 
@@ -25,12 +31,11 @@ using namespace crystalos::IO;
 using namespace crystalos::drivers;
 using namespace crystalos::graphics;
 using namespace crystalos::util;
+using namespace crystalos::util::images;
 
 extern "C" void kernel_main(uint32_t kernel_info_block)
 {
-	
 	clearScreen();
-	print("Hello World!\n");
 
 	BootInformation* inf_struc = (BootInformation*)kernel_info_block;
 	VESAModeInfo* currentVideoMode = (VESAModeInfo*)&(inf_struc->currentModeInfo);
@@ -94,6 +99,15 @@ extern "C" void kernel_main(uint32_t kernel_info_block)
 	//The first filesystem instance initiated is the one used by the boot disk of ths OS.
 	FileSystem* fs = (FileSystem*)memoryManager.malloc(sizeof(FileSystem));
 	if (fs == 0) return;
+
+#ifdef GRAPHICS_MODE
+	Desktop* myDesktop = (Desktop*)memoryManager.malloc(sizeof(Desktop));
+	if (myDesktop == 0) return;
+
+	new (myDesktop) Desktop(currentVideoMode);
+#endif
+
+	print("Hello World!\n");
 
 	PCIDeviceDescriptor* ahci_descriptor = (PCIDeviceDescriptor*)memoryManager.malloc(sizeof(PCIDeviceDescriptor));
 	if (ahci_descriptor == 0) return;
@@ -263,13 +277,50 @@ extern "C" void kernel_main(uint32_t kernel_info_block)
 	}
 
 
+#ifdef GRAPHICS_MODE
+	new (keyboard) KeyboardDriver(kernel_interrupts, myDesktop); //keyboard driver
+#else
 	ConsoleKeyboardHandler* kbhandler = (ConsoleKeyboardHandler*)memoryManager.malloc(sizeof(ConsoleKeyboardHandler));
 	if (kbhandler != 0){
 		new (kbhandler) ConsoleKeyboardHandler;
 		if (keyboard != 0) new (keyboard) KeyboardDriver(kernel_interrupts, kbhandler); //keyboard driver
 	}
+#endif
 	kernel_drivers->Add(keyboard);
 	keyboard->Activate();
+
+#ifdef GRAPHICS_MODE
+	//load an image (1024*768) from the disk and display it as the desktop background...
+	int num_files;
+
+	File* files  = fs->GetFiles("C:\\", &num_files);
+
+	if (num_files > 0)
+	{
+		for (int i = 0; i < num_files; i++)
+		{
+			if (files[i].Name[0] == 'D' &&
+				files[i].Name[1] == 'E' && 
+				files[i].Name[2] == 'S' && 
+				files[i].Name[3] == 'K' && 
+				files[i].Name[4] == 'B' && 
+				files[i].Name[5] == 'G' && 
+				files[i].Name[6] == '0' && 
+				files[i].Name[8] == 'B' && 
+				files[i].Name[9] == 'M' && 
+				files[i].Name[10] == 'P')
+				{
+					uint8_t* filebuf = (uint8_t*)memoryManager.malloc(files[i].Size * 2);
+					fs->ReadFile(files[i], filebuf);
+					Bitmap* bmp = (Bitmap*)memoryManager.malloc(sizeof(Bitmap));
+					new (bmp) Bitmap(filebuf);
+					myDesktop->DrawImage(bmp, 0, 0, 1);
+					break;
+				}
+		}
+	}
+
+#endif
 
 	print("OS Ready. Schedules running...\n");
 

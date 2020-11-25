@@ -12,6 +12,7 @@ kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/util/events.o \
 				out/obj/kernel/util/number.o \
 				out/obj/kernel/util/string.o \
+				out/obj/kernel/util/images/bitmap.o \
 				out/obj/kernel/IO/port.o \
 				out/obj/kernel/IO/interrupts.o \
 				out/obj/kernel/IO/interruptstubs.o \
@@ -24,6 +25,9 @@ kernel_files = out/obj/kernel/kernel_entry.o \
 				out/obj/kernel/drivers/usb.o \
 				out/obj/kernel/drivers/usb_mass_storages.o \
 				out/obj/kernel/drivers/filesystem.o \
+				out/obj/kernel/graphics/desktop.o \
+				out/obj/kernel/graphics/widget.o \
+				out/obj/kernel/graphics/window.o \
 				out/obj/kernel/memory_manager.o \
 				out/obj/kernel/multitasking.o \
 				out/obj/kernel/kernel_main.o
@@ -44,8 +48,10 @@ out/obj/kernel/%.o: kernel/src/%.cpp
 	mkdir -p out/obj
 	mkdir -p out/obj/kernel
 	mkdir -p out/obj/kernel/util
+	mkdir -p out/obj/kernel/util/images
 	mkdir -p out/obj/kernel/IO
 	mkdir -p out/obj/kernel/drivers
+	mkdir -p out/obj/kernel/graphics
 	i586-elf-g++ $(GPPPARAMS_KERNEL) -c $< -o $@
 
 kernel.bin: $(kernel_files)

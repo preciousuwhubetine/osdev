@@ -221,8 +221,7 @@ found_mode:
 	mov bx, cx
 	mov ax, 0x4f02	;Set vbe mode
 
-	; This is commented out because i will be using the default text mode for now.
-	; int 10h
+	int 10h
 
 	jmp EnablePaging 
 	
