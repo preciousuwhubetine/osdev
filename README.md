@@ -17,7 +17,6 @@ WHATS CURRENTLY INCLUDED:
 - Displaying a bitmap image on the screen.
 
 In the makefile, I write the output binary to /dev/sdb which is the second hdd connected to my PC.
-I'm gonna be making a tutorial on how I did all of this really soon...
 
 Whats coming:
 - Basic GUI controls (textboxes, listboxes, etc).
