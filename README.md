@@ -1,4 +1,4 @@
-This is the code for an Operating System i've been working on for some time now.
+This is the code for an my Operating System
 Written and compiled on Windows 10 and tested in Virtualbox and on the real hardware.
 
 WHATS CURRENTLY INCLUDED:
@@ -22,4 +22,4 @@ Whats coming:
 - Basic GUI controls (textboxes, listboxes, etc).
 - An application launcher (still not sure how i'm gonna be doing this).
 
-I'm gonna be updating the list as new ideas drop!
+21/12/2022 - I'm resuming work on this project today.
