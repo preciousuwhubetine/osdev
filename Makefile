@@ -65,7 +65,7 @@ install: $(boot_files) kernel.bin
 	dd if=out/bin/kernel.bin of=$(device) seek=3
 
 run: install
-	VirtualBox --startvm "CrystalOS"
+	VirtualBoxVM --startvm "CrystalOS"
 
 .PHONY: clean
 clean:

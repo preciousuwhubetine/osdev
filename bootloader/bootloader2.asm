@@ -221,7 +221,7 @@ found_mode:
 	mov bx, cx
 	mov ax, 0x4f02	;Set vbe mode
 
-	int 10h
+	; int 10h
 
 	jmp EnablePaging 
 	
