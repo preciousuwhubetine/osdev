@@ -22,4 +22,4 @@ Whats coming:
 - Basic GUI controls (textboxes, listboxes, etc).
 - An application launcher (still not sure how i'm gonna be doing this).
 
-21/12/2022 - I'm resuming work on this project today.
+30/12/2022 - I'm resuming work on this project soon.
