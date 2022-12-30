@@ -21,5 +21,3 @@ In the makefile, I write the output binary to /dev/sdb which is the second hdd c
 Whats coming:
 - Basic GUI controls (textboxes, listboxes, etc).
 - An application launcher (still not sure how i'm gonna be doing this).
-
-30/12/2022 - I'm resuming work on this project soon.
